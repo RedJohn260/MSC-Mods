@@ -6,16 +6,17 @@ namespace MSCDirtMod
 	public class MSCDirtMod : Mod
 	{
 		private bool m_isLoaded = false;
-		public override string ID { get { return "MSCDirtMod"; } }
-		public override string Name { get { return "Dirt Mod"; } }
-		public override string Author { get { return "zamp"; } }
-		public override string Version { get { return "1.8.8"; } }
-		public override bool UseAssetsFolder { get { return true; } }
+		public override string ID => "DirtModRevived";
+		public override string Name => "DirtModRevived";
+		public override string Author => "Zamp, RedJohn260";
+		public override string Version => "1.0";
+		public override bool UseAssetsFolder => true;
 
 		public static string assetPath;
 
 		public static Keybind keyMoreDirt = new Keybind("moredirt", "More Dirt", KeyCode.KeypadPlus, KeyCode.LeftControl);
 		public static Keybind keyLessDirt = new Keybind("lessdirt", "Less Dirt", KeyCode.KeypadMinus, KeyCode.LeftControl);
+		public static Settings debugMode = new Settings("debug", "Debug Mode", false);
 
 		public override void OnLoad()
 		{
@@ -38,6 +39,10 @@ namespace MSCDirtMod
 			{
 				m_isLoaded = false;
 			}
+		}
+		public override void ModSettings()
+        {
+			Settings.AddCheckBox(this, debugMode);
 		}
 	}
 }

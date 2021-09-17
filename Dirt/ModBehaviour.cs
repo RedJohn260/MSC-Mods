@@ -109,13 +109,13 @@ namespace MSCDirtMod
 		private IEnumerator SetupMod()
 		{
 			while (GameObject.Find("PLAYER") == null ||
-			       GameObject.Find("PLAYER/Pivot/Camera/FPSCamera/FPSCamera/AudioRain") == null)
+			       GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/FPSCamera/AudioRain") == null)
 			{
 				yield return null;
 			}
 
 			ModConsole.Print("Dirt mod loading assetbundle...");
-			var path = MSCDirtMod.assetPath;
+			/*var path = MSCDirtMod.assetPath;
 			if (SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL") && Application.platform == RuntimePlatform.WindowsPlayer)
 				path = Path.Combine(path, "bundle-linux"); // apparently fixes opengl
 			else if (Application.platform == RuntimePlatform.WindowsPlayer)
@@ -129,17 +129,18 @@ namespace MSCDirtMod
 			{
 				ModConsole.Error("Couldn't find asset bundle from path " + path);
 				yield break;
-			}
+			}*/
 
-			m_bundle = AssetBundle.CreateFromMemoryImmediate(File.ReadAllBytes(path));
+
+			m_bundle = MSCLoader.LoadAssets.LoadBundle(ModLoader.GetMod("DirtModRevived"), "dirtmod.unity3d");
 			LoadAssets();
 
 			ModConsole.Print("Dirt mod doing final setup...");
-			m_rainAudioSource = GameObject.Find("PLAYER/Pivot/Camera/FPSCamera/FPSCamera/AudioRain").GetComponent<AudioSource>();
+			m_rainAudioSource = GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/FPSCamera/AudioRain").GetComponent<AudioSource>();
 
 			m_satsuma = PlayMakerGlobals.Instance.Variables.GetFsmGameObject("TheCar").Value;
 			m_carDynamics = m_satsuma.GetComponentInChildren<CarDynamics>();
-			m_wiperPivot = m_satsuma.transform.FindChild("Wipers/WiperLeftPivot");
+			m_wiperPivot = m_satsuma.transform.FindChild("Wipers/WiperLeftPivot/wipers_tap");
 
 			ModConsole.Print("Setting up buckets...");
 			SetupBuckets();
@@ -210,17 +211,20 @@ namespace MSCDirtMod
 
 		private void DebugKeys()
 		{
-			if (MSCDirtMod.keyLessDirt.IsPressed())
-			{
-				m_bodyDirtCutoff += Time.deltaTime * 0.1f;
-				m_windowWipeAmount += Time.deltaTime * 0.1f;
-				m_wheelDirtCutoff += Time.deltaTime * 0.1f;
-			}
-			else if (MSCDirtMod.keyMoreDirt.IsPressed())
-			{
-				m_bodyDirtCutoff -= Time.deltaTime * 0.1f;
-				m_windowWipeAmount -= Time.deltaTime * 0.1f;
-				m_wheelDirtCutoff -= Time.deltaTime * 0.1f;
+            if (((bool)MSCDirtMod.debugMode.GetValue()))
+            {
+				if (MSCDirtMod.keyLessDirt.GetKeybind())
+				{
+					m_bodyDirtCutoff += Time.deltaTime * 0.1f;
+					m_windowWipeAmount += Time.deltaTime * 0.1f;
+					m_wheelDirtCutoff += Time.deltaTime * 0.1f;
+				}
+				else if (MSCDirtMod.keyMoreDirt.GetKeybind())
+				{
+					m_bodyDirtCutoff -= Time.deltaTime * 0.1f;
+					m_windowWipeAmount -= Time.deltaTime * 0.1f;
+					m_wheelDirtCutoff -= Time.deltaTime * 0.1f;
+				}
 			}
 		}
 
@@ -285,7 +289,7 @@ namespace MSCDirtMod
 			SwapMiscPartMaterial("Body/pivot_flares_rr/fender flare rr(Clone)", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_flares_rl/fender flare rl(Clone)", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_grille/grille(Clone)", m_genericDirtTexture);
-			SwapMiscPartMaterial("Body/pivot_hood/fiberglass hood(Clone)", m_genericDirtTexture);
+			//SwapMiscPartMaterial("Body/pivot_hood/fiberglass hood(Clone)", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_bumper_front/bumper front(Clone)", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_bumper_rear/bumper rear(Clone)", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_spoiler_front/fender flare spoiler(Clone)", m_genericDirtTexture);
@@ -293,6 +297,30 @@ namespace MSCDirtMod
 			SwapMiscPartMaterial("Body/pivot_bootlid/bootlid(Clone)/bootlid_emblem", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_bootlid/bootlid(Clone)/RegPlateRear", m_genericDirtTexture);
 			SwapMiscPartMaterial("Body/pivot_bootlid/bootlid(Clone)/RegPlateRear", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/pivot_exhaust_muffler/racing muffler(Clone)", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/mudflap rl(xxxxx)", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/mudflap rr(xxxxx)", m_genericDirtTexture);
+			SwapMiscPartMaterial("Body/pivot_fender_left/fender left(Clone)/mudflap fl(xxxxx)", m_genericDirtTexture);
+			SwapMiscPartMaterial("Body/pivot_fender_right/fender right(Clone)/mudflap fr(xxxxx)", m_genericDirtTexture);
+
+			SwapMiscPartMaterial("MiscParts/rearlight(leftx)", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/rearlight(leftx)/light_rear_lights", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/rearlight(right)", m_genericDirtTexture);
+			SwapMiscPartMaterial("MiscParts/rearlight(right)/light_rear_lights", m_genericDirtTexture);
+
+			SwapMiscPartMaterial("Body/pivot_door_left/door left(Clone)/mirror", m_genericDirtTexture);
+			SwapMiscPartMaterial("Body/pivot_door_left/door left(Clone)/handle", m_genericDirtTexture);
+			SwapMiscPartMaterial("Body/pivot_door_right/door right(Clone)/handle", m_genericDirtTexture);
+
+			SwapMiscPartMaterial("Body/pivot_grille/grille gt(Clone)", m_genericDirtTexture);
+
+			SwapMiscPartMaterial("Body/pivot_bumper_front/bumper front(Clone)/RegPlateFront", m_genericDirtTexture);
+
+			//SwapMiscPartMaterial("MiscParts/pivot_headlight_left/headlight left(Clone)", m_genericDirtTexture);
+			//SwapMiscPartMaterial("MiscParts/pivot_headlight_left/headlight left(Clone)/light_front_drive_l", m_genericDirtTexture);
+			//SwapMiscPartMaterial("MiscParts/pivot_headlight_right/headlight right(Clone)", m_genericDirtTexture);
+			//SwapMiscPartMaterial("MiscParts/pivot_headlight_right/headlight right(Clone)/light_front_drive_r", m_genericDirtTexture);
+
 		}
 
 		private void SwapMiscPartMaterial(string miscpart, Texture2D texture)
@@ -316,11 +344,16 @@ namespace MSCDirtMod
 		private void SetupWindows()
 		{
 			RemoveBrokenWindshield();
+			
 			SwapWindowPartMaterial("Body/Windshield/mesh", true);
-			SwapWindowPartMaterial("Body/rear_windows/standard", false);
+			//SwapWindowPartMaterial("Body/rear_windows/Rear", false);
+			//SwapWindowPartMaterial("Body/rear_windows/ClearGlass/Rear", false);
+			//SwapWindowPartMaterial("Body/rear_windows/ClearGlass/Sides", false);
 			SwapWindowPartMaterial("Body/rear_windows/black windows(xxxxx)", false);
 			SwapWindowPartMaterial("Body/pivot_door_right/door right(Clone)/windows_pivot/coll/glass", true);
 			SwapWindowPartMaterial("Body/pivot_door_left/door left(Clone)/windows_pivot/coll/glass", true);
+			//SwapWindowPartMaterial("Body/rear_windows/ClearGlass/Rear", false);
+			SwapWindowPartMaterial("Body/rear_windows/ClearGlass/Sticker", true);
 		}
 
 		private void RemoveBrokenWindshield()
@@ -349,6 +382,8 @@ namespace MSCDirtMod
 				{
 					var dupe = DupeWindow(part);
 					dupe.name = "DupeDirt";
+					dupe.gameObject.SetActive(true);
+					
 
 					// turn window shadow receive off so they don't compete
 					part.GetComponent<MeshRenderer>().receiveShadows = false;
@@ -375,6 +410,7 @@ namespace MSCDirtMod
 			SwapBodyPartMaterial("Body/pivot_fender_left/fender left(Clone)");
 			SwapBodyPartMaterial("Body/pivot_fender_right/fender right(Clone)");
 			SwapBodyPartMaterial("Body/pivot_bootlid/bootlid(Clone)");
+			SwapBodyPartMaterial("Body/pivot_hood/fiberglass hood(Clone)");
 		}
 
 		private void SwapBodyPartMaterial(string bodypart)
@@ -399,10 +435,14 @@ namespace MSCDirtMod
 
 		private void SetupWheels()
 		{
-			SwapWheelMaterial("wheelFL/TireFL/OFFSET/pivot_wheel_standard");
-			SwapWheelMaterial("wheelFR/TireFR/OFFSET/pivot_wheel_standard");
-			SwapWheelMaterial("wheelRL/TireRL/pivot_wheel_standard");
-			SwapWheelMaterial("wheelRR/TireRR/pivot_wheel_standard");
+			SwapWheelMaterial("FL/AckerFL/wheelFL/TireFL/OFFSET/pivot_wheel_standard");
+			SwapWheelMaterial("FR/AckerFR/wheelFR/TireFR/OFFSET/pivot_wheel_standard");
+			SwapWheelMaterial("RL/wheelRL/TireRL/pivot_wheel_standard");
+			SwapWheelMaterial("RR/wheelRR/TireRR/pivot_wheel_standard");
+			SwapWheelMaterial("FL/AckerFL/wheelFL/TireFL/OFFSET/pivot_wheel_offset");
+			SwapWheelMaterial("FR/AckerFR/wheelFR/TireFR/OFFSET/pivot_wheel_offset");
+			SwapWheelMaterial("RL/wheelRL/TireRL/pivot_wheel_offset");
+			SwapWheelMaterial("RR/wheelRR/TireRR/pivot_wheel_offset");
 		}
 
 		private void SwapWheelMaterial(string pivotPart)
@@ -469,7 +509,7 @@ namespace MSCDirtMod
 
 		private void SetupAudio()
 		{
-			var fpsCamera = GameObject.Find("FPSCamera");
+			var fpsCamera = GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/FPSCamera");
 			var go = new GameObject("SmackSound");
 			m_smackAudioSource = go.AddComponent<AudioSource>();
 			m_smackAudioSource.playOnAwake = false;
@@ -521,7 +561,7 @@ namespace MSCDirtMod
 			m_handRight = PlayMakerGlobals.Instance.Variables.FindFsmBool("PlayerHandRight");
 
 			// setup hands
-			var fpsCamera = GameObject.Find("FPSCamera");
+			var fpsCamera = GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/FPSCamera");
 			m_rightFist = Instantiate(fpsCamera.transform.FindChild("Fist")).gameObject;
 			m_rightFist.transform.SetParent(fpsCamera.transform, false);
 			m_rightFist.SetActive(false);

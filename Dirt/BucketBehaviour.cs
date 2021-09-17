@@ -17,8 +17,8 @@ namespace MSCDirtMod
 		private HutongGames.PlayMaker.FsmBool m_guiUseBool;
 		private string m_id;
 		private HutongGames.PlayMaker.FsmString m_guiInteraction;
-private  MeshCollider m_trigger;
-private  GameObject m_sponge;
+		private  MeshCollider m_trigger;
+		private  GameObject m_sponge;
 
 		void Start()
 		{
